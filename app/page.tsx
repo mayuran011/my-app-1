@@ -13,7 +13,7 @@ export default function Home() {
         </p>
 
         <h1 className="mb-6 bg-gradient-to-r from-[#ff4b70] via-[#ff4d66] to-[#ff5a44] bg-clip-text text-5xl font-black uppercase leading-none tracking-wide text-transparent md:text-8xl">
-          Mobile Apps
+          Web Apps
         </h1>
 
         <p className="mb-4 flex flex-wrap items-center justify-center gap-2 text-lg font-black uppercase tracking-wide md:text-[2.05rem]">
