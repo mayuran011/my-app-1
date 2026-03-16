@@ -1,11 +1,12 @@
 {
   "name": "my-app-1",
-  "homepage": "http://test1.mayusana.com/",
+  "homepage": "https://nia.yt",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:deploy": "next build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/",
     "start": "next start",
     "lint": "eslint"
   },
