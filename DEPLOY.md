@@ -4,6 +4,11 @@ This guide covers hosting this Next.js app online via **GitHub** → **VPS with 
 
 **Deployment path on server:** `/home/mayu/git/my-app-1` (via Webuzo Git Version Control).
 
+| Purpose | URL |
+|--------|-----|
+| **Remote (GitHub)** | https://github.com/mayuran011/my-app-1 |
+| **Clone URL (server)** | `ssh://mayu@newjaffnatamil.com:22/home/mayu/git/my-app-1` |
+
 ---
 
 ## Deploy via Webuzo Git Version Control
@@ -87,13 +92,15 @@ npm run build:deploy
 ```
 
 **2. Start the app and keep it running with PM2**
+
+Use an **absolute path** and **`--cwd`** so PM2 restarts correctly after reboot (relative paths do not preserve working directory):
+
 ```bash
-cd /home/mayu/git/my-app-1
 # Install PM2 once (if needed)
 sudo npm install -g pm2
-# Start the app (standalone)
-pm2 start .next/standalone/server.js --name nia-yt
-# Or if that fails, use: pm2 start npm --name "nia-yt" -- start
+# Start the app (standalone): absolute path + cwd for reliable restart after reboot
+pm2 start /home/mayu/git/my-app-1/.next/standalone/server.js --name nia-yt --cwd /home/mayu/git/my-app-1
+# Or if that fails, use: pm2 start npm --name "nia-yt" --cwd /home/mayu/git/my-app-1 -- start
 pm2 save
 pm2 startup
 ```
@@ -248,11 +255,11 @@ cd /home/mayu/git/my-app-1
 node .next/standalone/server.js
 ```
 
-By default it listens on port **3000**. Keep it running in the background with **PM2**:
+By default it listens on port **3000**. Keep it running in the background with **PM2**. Use an **absolute path** and **`--cwd`** so the app restarts correctly after reboot:
 
 ```bash
 sudo npm install -g pm2
-pm2 start .next/standalone/server.js --name nia-yt
+pm2 start /home/mayu/git/my-app-1/.next/standalone/server.js --name nia-yt --cwd /home/mayu/git/my-app-1
 pm2 save
 pm2 startup
 ```
@@ -261,8 +268,8 @@ Or, if you prefer `next start` (no standalone):
 
 ```bash
 npm run start
-# Then with PM2:
-pm2 start npm --name "nia-yt" -- start
+# Then with PM2 (--cwd required for correct restart after reboot):
+pm2 start npm --name "nia-yt" --cwd /home/mayu/git/my-app-1 -- start
 pm2 save
 pm2 startup
 ```
@@ -343,17 +350,28 @@ After that, **https://nia.yt** should serve your Next.js app.
 
 ---
 
-## 8. Updating the site
+## 8. Updating the site (GitHub updated but nia.yt not changed yet)
 
-On the VPS:
+After you **push to GitHub**, the live site **does not update by itself**. You must update and rebuild on the VPS, then restart the app.
+
+**On the VPS (SSH):**
 
 ```bash
 cd /home/mayu/git/my-app-1
 git pull
 npm ci || npm install
 npm run build:deploy
-pm2 restart nia-yt
 ```
+
+**Then restart the app** in one of these ways:
+
+- **If you use PM2:**  
+  `pm2 restart nia-yt`
+
+- **If you use Webuzo Application Manager:**  
+  Open **Application Manager → List Application**, find **nia.yt**, and click **Restart** (or Stop then Start).
+
+After that, reload **https://nia.yt** to see the changes.
 
 ---
 
