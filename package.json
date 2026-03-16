@@ -1,5 +1,6 @@
 {
   "name": "my-app-1",
+  "homepage": "http://test1.mayusana.com/",
   "version": "0.1.0",
   "private": true,
   "scripts": {
