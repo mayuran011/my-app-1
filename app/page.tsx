@@ -6,7 +6,7 @@ export default function Home() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(11,113,130,0.35),transparent_40%),radial-gradient(circle_at_50%_100%,rgba(7,59,76,0.35),transparent_55%)]" />
 
       <section className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center">
-        <p className="mb-14 text-4xl font-black tracking-tight md:text-5xl">elmony.</p>
+        <p className="mb-14 text-4xl font-black tracking-tight md:text-5xl">NIA APP</p>
 
         <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.45em] text-white/60 md:text-xs">
           Create Amazing
@@ -24,7 +24,7 @@ export default function Home() {
         </p>
 
         <p className="mb-8 max-w-3xl text-sm text-white/70 md:text-lg">
-          Built to make you extraordinarily productive, Elmony is the best way to
+          Built to make you extraordinarily productive, NIA APP is the best way to
           code with AI.
         </p>
 
