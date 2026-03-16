@@ -20,7 +20,7 @@ git branch -M main
 git push -u origin main
 ```
 
-Replace `YOUR_USERNAME` and `YOUR_REPO` with your GitHub username and repository name.
+Replace `YOUR_USERNAME` and `YOUR_REPO` with your GitHub username and repository name. Ensure **`package-lock.json`** is committed and pushed so `npm ci` works on the VPS; if it’s missing, the deploy guide uses `npm install` as a fallback.
 
 ---
 
@@ -72,28 +72,64 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-### 3.3 Clone the repo and build
+### 3.3 GitHub authentication (required for clone on VPS)
 
-Pick a directory where the app will run (e.g. under your home or Webuzo’s app path):
+If the repo is **public**, you can clone without logging in:
 
 ```bash
-cd /home
-# Or e.g. /var/www if that’s your Webuzo web root
-sudo mkdir -p nia.yt
-sudo chown $USER:$USER nia.yt
+git clone https://github.com/mayuran011/my-app-1.git .
+```
+
+If the repo is **private**, GitHub no longer accepts account passwords for Git. Use one of these:
+
+**Option A – Personal Access Token (HTTPS)**  
+1. On GitHub: **Settings → Developer settings → Personal access tokens → Tokens (classic)**.  
+2. Generate a new token with at least the **`repo`** scope.  
+3. On the VPS when you run `git clone`, use your **GitHub username** and, when asked for password, paste the **token** (not your GitHub password).
+
+**Option B – SSH (no prompt after setup)**  
+1. On the VPS: `ssh-keygen -t ed25519 -C "vps-nia" -f ~/.ssh/id_ed25519 -N ""`  
+2. Show public key: `cat ~/.ssh/id_ed25519.pub`  
+3. On GitHub: **Settings → SSH and GPG keys → New SSH key**; paste the key.  
+4. Clone with SSH instead of HTTPS:  
+   `git clone git@github.com:mayuran011/my-app-1.git .`
+
+---
+
+### 3.4 Clone the repo and build
+
+Use an **empty** directory. If the folder already exists and is not empty, clear it first:
+
+```bash
+# Option A: Fresh empty directory
+sudo mkdir -p /home/mayu/nia.yt
+sudo chown $USER:$USER /home/mayu/nia.yt
+cd /home/mayu/nia.yt
+git clone https://github.com/mayuran011/my-app-1.git .
+# When prompted: Username = mayuran011, Password = your Personal Access Token (not GitHub password)
+```
+
+If you get **"fatal: destination path '.' already exists and is not an empty directory"** or **"Authentication failed"** (e.g. after entering your GitHub password), see **3.3** (use a Personal Access Token or SSH). Then:
+
+```bash
+# Clear folder and clone again
+cd /home/mayu
+rm -rf nia.yt
+mkdir nia.yt
 cd nia.yt
-
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git .
-npm ci
-npm run build
+git clone https://github.com/mayuran011/my-app-1.git .
+# Or with SSH: git clone git@github.com:mayuran011/my-app-1.git .
 ```
 
-Then copy static assets into the standalone output (required for CSS/images):
+Then install dependencies and build. Use `npm install` if `package-lock.json` is missing from the repo (e.g. not yet pushed); otherwise `npm ci` is preferred:
 
 ```bash
-cp -r public .next/standalone/
-cp -r .next/static .next/standalone/.next/
+cd /home/mayu/nia.yt   # or wherever you cloned
+npm ci || npm install
+npm run build:deploy
 ```
+
+(`build:deploy` runs the build and copies `public` and `.next/static` into the standalone output.)
 
 ---
 
@@ -102,7 +138,7 @@ cp -r .next/static .next/standalone/.next/
 With `output: "standalone"`, run the app from the **project root** (so `server.js` finds `.next/standalone/.next/static` and `public`):
 
 ```bash
-cd /home/nia.yt
+cd /home/mayu/nia.yt
 node .next/standalone/server.js
 ```
 
@@ -209,10 +245,10 @@ After that, **https://nia.yt** should serve your Next.js app.
 On the VPS:
 
 ```bash
-cd /home/nia.yt
+cd /home/mayu/nia.yt
 git pull
-npm ci
-npm run build
+npm ci || npm install
+npm run build:deploy
 pm2 restart nia-yt
 ```
 
